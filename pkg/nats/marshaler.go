@@ -150,5 +150,7 @@ func (*NATSMarshaler) Unmarshal(natsMsg *nats.Msg) (*message.Message, error) {
 	msg := message.NewMessage(id, data)
 	msg.Metadata = md
 
+	msg.Metadata.Set("Nats-Subject", natsMsg.Subject)
+
 	return msg, nil
 }
