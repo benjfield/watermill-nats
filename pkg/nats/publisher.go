@@ -179,7 +179,7 @@ func (p *Publisher) Publish(topic string, messages ...*message.Message) error {
 	// This is now only required if a stream name is not returned by the underlying topic interpreter
 	// TODO: should we auto provision on publish?  Need durable on publish options...
 	// should also cache this result to minimize chatter to broker
-	if len(p.streamManager.StreamName()) > 0 && p.config.JetStream.ShouldAutoProvision() {
+	if len(p.streamManager.StreamName()) == 0 && p.config.JetStream.ShouldAutoProvision() {
 		err := p.streamManager.ensureStreamForTopic(topic)
 		if err != nil {
 			return err
