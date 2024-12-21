@@ -31,11 +31,8 @@ func (d *defaultSubjectDetail) AllSubjects(_ string) []string {
 	}
 }
 
-func (d *defaultSubjectDetail) QueueGroup(topic string) string {
-	if len(d.queueGroupPrefix) > 0 {
-		return d.queueGroupPrefix + "." + topic
-	}
-	return topic
+func (d *defaultSubjectDetail) QueueGroup(_ string) string {
+	return d.queueGroupPrefix
 }
 
 func (d *defaultSubjectDetail) StreamName() string {
