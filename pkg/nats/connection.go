@@ -1,6 +1,7 @@
 package nats
 
 import (
+	"github.com/davecgh/go-spew/spew"
 	"github.com/nats-io/nats.go"
 )
 
@@ -34,6 +35,8 @@ func (j jsConnection) QueueSubscribe(s string, q string, handler nats.MsgHandler
 		// find & bind stream based on subscription subject
 		opts = append(opts, nats.BindStream(""))
 	}
+
+	spew.Dump(opts)
 
 	return j.js.QueueSubscribe(s, q, handler, opts...)
 }
