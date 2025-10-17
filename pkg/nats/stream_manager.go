@@ -8,6 +8,7 @@ import (
 // TODO: Add additional stream configuration here
 type StreamConfig struct {
 	AllowRollup bool
+	Replicas int
 }
 
 type streamManager struct {
@@ -61,27 +62,28 @@ func (s *streamManager) ensureStreamForStreamName(streamName string) error {
 	info, err := s.js.StreamInfo(streamName)
 
 	if err != nil {
-		if errors.Is(err, nats.ErrStreamNotFound) {
-			// TODO: provision durable as well
-			// or simply provide override capability
-			// TODO: Ensure that stream names do not contain disallowed characters
-			_, err = s.js.AddStream(&nats.StreamConfig{
+		streamConfig := &nats.StreamConfig{
 				Name:        streamName,
 				Description: "",
 				Subjects:    s.AllSubjects(streamName),
 				AllowRollup: s.config.AllowRollup,
-			})
+		}
+
+		if s.config.Replicas != 0 {
+			streamConfig.Replicas = s.config.Replicas
+		}
+
+		if errors.Is(err, nats.ErrStreamNotFound) {
+			// TODO: provision durable as well
+			// or simply provide override capability
+			// TODO: Ensure that stream names do not contain disallowed characters
+			_, err = s.js.AddStream(streamConfig)
 
 			if err != nil {
 				return err
 			}
 		} else {
-			_, err = s.js.UpdateStream(&nats.StreamConfig{
-				Name:        streamName,
-				Description: "",
-				Subjects:    s.AllSubjects(streamName),
-				AllowRollup: s.config.AllowRollup,
-			})
+			_, err = s.js.UpdateStream(streamConfig)
 
 			if err != nil {
 				return err
